@@ -157,6 +157,7 @@ ProcessMessage RangeTestModuleRadio::handleReceived(const meshtastic_MeshPacket 
             LOG_DEBUG("---- Received Packet:\n");
             LOG_DEBUG("mp.from          %d\n", mp.from);
             LOG_DEBUG("mp.rx_snr        %f\n", mp.rx_snr);
+            LOG_DEBUG("mp.rx_rssi        %f\n", mp.rx_rssi);
             LOG_DEBUG("mp.hop_limit     %d\n", mp.hop_limit);
             // LOG_DEBUG("mp.decoded.position.latitude_i     %d\n", mp.decoded.position.latitude_i); // Deprecated
             // LOG_DEBUG("mp.decoded.position.longitude_i    %d\n", mp.decoded.position.longitude_i); // Deprecated
@@ -196,6 +197,7 @@ bool RangeTestModuleRadio::appendFile(const meshtastic_MeshPacket &mp)
         LOG_DEBUG("---- Received Packet:\n");
         LOG_DEBUG("mp.from          %d\n", mp.from);
         LOG_DEBUG("mp.rx_snr        %f\n", mp.rx_snr);
+        LOG_DEBUG("mp.rx_rssi        %f\n", mp.rx_rssi);
         LOG_DEBUG("mp.hop_limit     %d\n", mp.hop_limit);
         // LOG_DEBUG("mp.decoded.position.latitude_i     %d\n", mp.decoded.position.latitude_i);  // Deprecated
         // LOG_DEBUG("mp.decoded.position.longitude_i    %d\n", mp.decoded.position.longitude_i); // Deprecated
@@ -236,7 +238,7 @@ bool RangeTestModuleRadio::appendFile(const meshtastic_MeshPacket &mp)
 
         // Print the CSV header
         if (fileToWrite.println(
-                "time,from,sender name,sender lat,sender long,rx lat,rx long,rx elevation,rx snr,distance,hop limit,payload")) {
+                "time,from,sender name,sender lat,sender long,rx lat,rx long,rx elevation,rx snr,rx rssi,distance,hop limit,payload")) {
             LOG_INFO("File was written\n");
         } else {
             LOG_ERROR("File write failed\n");
@@ -275,8 +277,8 @@ bool RangeTestModuleRadio::appendFile(const meshtastic_MeshPacket &mp)
     fileToAppend.printf("%f,", gpsStatus->getLatitude() * 1e-7);  // RX Lat
     fileToAppend.printf("%f,", gpsStatus->getLongitude() * 1e-7); // RX Long
     fileToAppend.printf("%d,", gpsStatus->getAltitude());         // RX Altitude
-
     fileToAppend.printf("%f,", mp.rx_snr); // RX SNR
+    fileToAppend.printf("%d,", mp.rx_rssi); // RX RSSI (int)
 
     if (n->position.latitude_i && n->position.longitude_i && gpsStatus->getLatitude() && gpsStatus->getLongitude()) {
         float distance = GeoCoord::latLongToMeter(n->position.latitude_i * 1e-7, n->position.longitude_i * 1e-7,
